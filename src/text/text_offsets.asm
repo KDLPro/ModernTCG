@@ -2991,3 +2991,5 @@ TextOffsets:: ; 34000 (d:4000)
 	textpointer GamblerDescription                                 ; 0x0bab
 	textpointer RecycleName                                        ; 0x0bac
 	textpointer RecycleDescription                                 ; 0x0bad
+	textpointer MulliganPenalty1Text				
+	textpointer MulliganPenalty2Text				

@@ -1714,7 +1714,7 @@ HandleDuelSetup:
 	ldh a, [hTemp_ffa0]
 	ld b, a
 	and c
-	jr nz, .hand_cards_ok
+	jp nz, .hand_cards_ok
 	ld a, b
 	or c
 	jr z, .neither_drew_basic_pkmn
@@ -1728,7 +1728,23 @@ HandleDuelSetup:
 	call InitializeDuelVariables
 	call PlayShuffleAndDrawCardsAnimation_TurnDuelist
 	call ShuffleDeckAndDrawSevenCards
+	call IncreaseDrawPenalty
 	jr c, .ensure_player_basic_pkmn_loop
+	call SwapTurn
+	ldtx hl, MulliganPenalty1Text
+	call DrawWideTextBox_WaitForInput
+	ldtx hl, MulliganPenalty2Text
+	call DrawWideTextBox_WaitForInput
+	ld a, [wTimesMulliganed]
+	bank1call DisplayDrawNCardsScreen
+	ld a, [wTimesMulliganed]
+	ld b, a
+.draw_mulligan_opponent
+	call DrawCardFromDeck
+	call AddCardToHand
+	dec b
+	jr nz, .draw_mulligan_opponent
+	call SwapTurn
 	jr .hand_cards_ok
 
 .opp_drew_no_basic_pkmn
@@ -1738,8 +1754,22 @@ HandleDuelSetup:
 	call InitializeDuelVariables
 	call PlayShuffleAndDrawCardsAnimation_TurnDuelist
 	call ShuffleDeckAndDrawSevenCards
+	call IncreaseDrawPenalty
 	jr c, .ensure_opp_basic_pkmn_loop
 	call SwapTurn
+	ldtx hl, MulliganPenalty1Text
+	call DrawWideTextBox_WaitForInput
+	ldtx hl, MulliganPenalty2Text
+	call DrawWideTextBox_WaitForInput
+	ld a, [wTimesMulliganed]
+	bank1call DisplayDrawNCardsScreen
+	ld a, [wTimesMulliganed]
+	ld b, a
+.draw_mulligan_player
+	call DrawCardFromDeck
+	call AddCardToHand
+	dec b
+	jr nz, .draw_mulligan_player
 	jr .hand_cards_ok
 
 .neither_drew_basic_pkmn
@@ -7702,6 +7732,8 @@ InitializeDuelVariables:
 	inc l
 	dec c
 	jr nz, .init_play_area
+	xor a
+	ld [wTimesMulliganed], a
 	ret
 
 ; draw [wDuelInitialPrizes] cards from the turn holder's deck and place them as prizes:
@@ -8412,4 +8444,8 @@ DecideLinkDuelVariables:
 	or a
 	ret
 
-	ret ; stray ret
+IncreaseDrawPenalty:   ; wTimesMulliganed stores the number of cards opponent draws
+	ld a, [wTimesMulliganed]
+	inc a
+	ld [wTimesMulliganed], a
+	ret 

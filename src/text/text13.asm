@@ -183,3 +183,14 @@ RecycleDescription: ; 6495e (19:495e)
 	line "in your discard pile on top of your"
 	line "deck."
 	done
+
+MulliganPenalty1Text:
+	text "The player who doesn't have"
+	line "to mulligan draws more cards"
+	done
+	
+MulliganPenalty2Text:
+	text "equal to the number of times"
+	line "their opponent has to mulligan."
+	done
+	
